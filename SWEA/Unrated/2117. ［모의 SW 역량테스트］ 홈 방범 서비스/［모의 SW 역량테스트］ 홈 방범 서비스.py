@@ -1,37 +1,35 @@
 # import sys
-# sys.stdin = open('input.txt','r')
+# sys.stdin = open('input.txt', 'r')
 
-# 운영 비용을 미리 계산해 두기 위한 리스트 생성
-cost = [(k*k + (k-1)*(k-1)) for k in range(40)]
+# cost 룩업테이블 작성
+cost = [(k ** 2 + (k - 1) ** 2) for k in range(22)]
 
+for t in range(1, int(input()) + 1):
+    N, M = map(int, input().split())  # M : 하나의 집이 지불할 수 있는 비용
+    arr = [list(map(int, input().split())) for _ in range(N)]
 
-def solve() :
-    ans = 0  
-    home = []  # 집의 좌표
-    for i in range(N) :
-        for j in range(N) :
-            if arr[i][j] == 1 :  
-                home.append((i,j)) 
+    ans = 0
+    # home의 좌표들을 추려놓기
+    home = []
+    for i in range(N):
+        for j in range(N):
+            if arr[i][j] == 1:
+                home.append((i, j))
 
-    for si in range(N) :
-        for sj in range(N) :
-            dist = [0] * 40  # 거리 별로 집의 수를 저장할 리스트
-            for hi,hj in home :  
-                t = abs(si-hi) + abs(sj-hj) + 1  # 서비스 영역 내에 포함된 거리 계산
-                dist[t] += 1  # 해당 거리 t에 포함된 집의 수를 증가시킴
+    # home의 좌표들을 기반으로 맨해튼 거리 구한 값을 dist에 추가
 
-            cnt = 0  # 해당 서비스 영역 내에 포함된 집의 수를 카운트
-            for k in range(1, 40) :
-                cnt += dist[k]  # 거리 k까지 포함된 집의 수를 누적
-                # 운영 비용이 수익을 충당할 수 있고, 더 많은 집에 서비스를 제공할 수 있는 경우
-                if cost[k] <= cnt * K and ans < cnt :
-                    ans = cnt 
-    return ans  
+    for si in range(N):
+        for sj in range(N):
+            dist = [0] * 40
+            for hi, hj in home:
+                tmp = abs(si - hi) + abs(sj - hj) + 1
+                dist[tmp] += 1
+            # k를 확장시키며 운영비용보다 지불비용이 큰 값 +
+            # 서비스 가능한 집이 많아지면 교체
+            cnt = 0
+            for k in range(1, 22):
+                cnt += dist[k]
+                if cost[k] <= cnt * M and ans < cnt:
+                    ans = cnt
 
-# 입력 처리 및 테스트 케이스 실행
-for t in range(1, int(input()) + 1) :
-    N, K = map(int,input().split()) 
-    arr = [list(map(int,input().split())) for _ in range(N)]  
-
-    ans = solve()  
-    print(f'#{t} {ans}')  
+    print(f'#{t} {ans}')
